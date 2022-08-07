@@ -1,3 +1,7 @@
+start_factorio.exe does the following:
+    - sets the process (factorio.exe) priority to HIGH
+    - sets the affinity for the process
+    - the output redirects to a file "temp"
 
 ### Usage:
     start_factorio.exe argList affinity_mask
@@ -15,7 +19,3 @@
       cd "A:/some kind of folder/source_directory"
       make -f makefile_win_mingw clear
       make -f makefile_win_mingw
-
-### Thanks
-I deeply appreciate the help of the following people.
-- [Hornwitser](https://gist.github.com/Hornwitser/f291638024e7e3c0271b1f3a4723e05a#file-exchange_string_decoder-js)
