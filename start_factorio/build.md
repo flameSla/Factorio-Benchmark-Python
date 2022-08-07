@@ -1,19 +1,16 @@
 
 ### start_factorio.exe does the following:
-
     - sets the process (factorio.exe) priority to HIGH
     - sets the affinity for the process
     - the output redirects to a file "temp"
 
 ### Usage:
-
     start_factorio.exe argList affinity_mask
     Where:
        argList - 'factorio.exe --benchmark "save" --benchmark-ticks 100 --disable-audio'
        affinity_mask - 3 https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setprocessaffinitymask");
 
 ### Building (Win)
-
     Install MSYS2.
     Install packages in MSYS2:
       pacman -S mingw-w64-x86_64-gcc
@@ -25,5 +22,4 @@
       make -f makefile_win_mingw
 
 ### Building (Linux)
-
     I don't have Linux, so you have to write the code yourself.
