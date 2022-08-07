@@ -1,0 +1,21 @@
+#make -f makefile.gcc clear
+#make -f makefile.gcc
+
+CC=g++.exe
+CFLAGS=-Wall -std=c++20 -fexceptions -O2 -c
+LDFLAGS=-s -static-libstdc++ -static-libgcc -static
+SOURCES=start_factorio.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=start_factorio.exe
+
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@	
+	
+clear:
+	rm -rf *.o start_factorio.exe
