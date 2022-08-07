@@ -108,12 +108,18 @@ def benchmark( saves = [""], ticks = 1000, runs = 3, benchmark_verbose = False, 
                         version = ret_val[0]
                         values += ret_val[1]
 
-                avg_ms = statistics.fmean( values )
-                min_ms = min( values )
+                if len( values ) > 0:
+                    avg_ms = statistics.fmean( values )
+                    min_ms = min( values )
+                    pstdev = statistics.pstdev(values)
+                else:
+                    avg_ms = 999.0
+                    min_ms = 999.0
+                    pstdev = 0.0
                 
                 print('   avg = {0:.3f} ms  {1:.2f} FPS'.format(avg_ms, 1000.0/avg_ms) )
                 print('   min = {0:.3f} ms  {1:.2f} FPS'.format(min_ms, 1000.0/min_ms) )
 
-                log( '{} {:64} {:3}x{:8} ticks avg: {:10.3f} ms {:8.3f} FPS   {} {} {} pstdev={:.3f}{}'.format(now.strftime("%Y-%m-%d %H:%M"),save,runs,ticks,avg_ms,1000.0/avg_ms,version,platform.system(),get_cpu_str(cpu),statistics.pstdev(values),values ) )
+                log( '{} {:64} {:3}x{:8} ticks avg: {:10.3f} ms {:8.3f} FPS   {} {} {} pstdev={:.3f}{}'.format(now.strftime("%Y-%m-%d %H:%M"),save,runs,ticks,avg_ms,1000.0/avg_ms,version,platform.system(),get_cpu_str(cpu),pstdev,values ) )
                     
 ############################################################################
