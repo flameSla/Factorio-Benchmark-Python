@@ -28,7 +28,12 @@ def get_avg(file_name, run = 1, runs = 1, cpu = 0, benchmark_verbose = False):
         EXECUTION_TIME_SEARCH = 2
         AVG_SEARCH = 3
         RUN1_SEARCH = 4
+        GET_COLUMNS = 5
+        GET_VALUES = 6
         
+    vals = list()
+    columns = list()
+    tick = 0
     step = Steps.VERSION_SEARCH
     for line in lines:
         if step == Steps.VERSION_SEARCH:
@@ -46,19 +51,35 @@ def get_avg(file_name, run = 1, runs = 1, cpu = 0, benchmark_verbose = False):
             if result:
                 a = float( result[1] )
                 avg.append( a )
-                print('run - {0}\t{1}\t{2:.2f} FPS\t{3}'.format(run, execution_time, 1000/a, get_cpu_str(cpu)))
+                print('run - {0}\t\t{1}\t{2:.2f} FPS\t{3}'.format(run, execution_time, 1000/a, get_cpu_str(cpu)))
                 if len(avg) < runs:
                     step = Steps.EXECUTION_TIME_SEARCH
                 else:
-                    step = Steps.RUN1_SEARCH
+                    if benchmark_verbose == False:
+                        break
+                    else:
+                        step = Steps.RUN1_SEARCH
         elif step == Steps.RUN1_SEARCH:
-            if benchmark_verbose == False:
+            if line == 'run 1:':
+                step = Steps.GET_COLUMNS
+        elif step == Steps.GET_COLUMNS:
+            columns = line[0:-1].split(',')
+            step = Steps.GET_VALUES
+        elif step == Steps.GET_VALUES:
+            if line[0] == 't':
+                val = [float(i)/1000000.0 for i in line[1:-1].split(',')]
+                if len(val) > len(vals):
+                    vals = val
+                else:
+                    vals = list( map(sum, zip(vals,val)) )
+                    
+                tick = int( val[0] * 1000000.0 )
+            else:
+                tick += 1
+                vals = [ i/tick for i in vals ]
                 break
-            #
-            # TODO: write code 'benchmark-verbose'
-            #
 
-    return( [version, avg] )
+    return( [version, avg, columns, vals] )
 ############################################################################
 def do_one_benchmark( save, ticks = 1000, run = 1, runs = 1, cpu = 0, mod_directory = "", benchmark_verbose = False ):
     ret_value = list()
@@ -102,11 +123,17 @@ def benchmark( saves = [""], ticks = 1000, runs = 3, benchmark_verbose = False, 
                 ret_val = list()
                 version = str()
                 values = list()
+                verbose_data = list()
                 for i in range(1,runs+1):
                     ret_val = do_one_benchmark( save, ticks, i, 1, cpu, mod_directory, benchmark_verbose )
-                    if len(ret_val) > 1:
+                    if len(ret_val) == 4:
                         version = ret_val[0]
                         values += ret_val[1]
+                        if benchmark_verbose:
+                            if len(verbose_data) < len(ret_val[3]):
+                                verbose_data = ret_val[3]
+                            else:
+                                verbose_data = list( map(sum, zip(verbose_data, ret_val[3])) )
 
                 if len( values ) > 0:
                     avg_ms = statistics.fmean( values )
@@ -121,5 +148,8 @@ def benchmark( saves = [""], ticks = 1000, runs = 3, benchmark_verbose = False, 
                 print('   min = {0:.3f} ms  {1:.2f} FPS'.format(min_ms, 1000.0/min_ms) )
 
                 log( '{} {:64} {:3}x{:8} ticks avg: {:10.3f} ms {:8.3f} FPS   {} {} {} pstdev={:.3f}{}'.format(now.strftime("%Y-%m-%d %H:%M"),save,runs,ticks,avg_ms,1000.0/avg_ms,version,platform.system(),get_cpu_str(cpu),pstdev,values ) )
-                    
+                if benchmark_verbose:
+                    log( ';'.join(str(x) for x in ret_val[2]) ) #columns
+                    log( ';'.join("{0:.3f}".format(x/runs) for x in verbose_data) )
 ############################################################################
+
