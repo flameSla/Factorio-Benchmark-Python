@@ -54,7 +54,7 @@ def get_avg(file_name, run, runs, cpu, benchmark_verbose):
                 if len(avg) < runs:
                     step = Steps.EXECUTION_TIME_SEARCH
                 else:
-                    if benchmark_verbose == False:
+                    if benchmark_verbose is False:
                         break
                     else:
                         step = Steps.RUN1_SEARCH
