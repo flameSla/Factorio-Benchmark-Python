@@ -7,15 +7,14 @@ import shutil
 import statistics
 import subprocess
 
-
 ############################################################################
-def get_cpu_str( cpu = 0 ):
+def get_cpu_str( cpu ):
     if cpu == 0:
         return 'CPUxALL'
     else:
         return 'CPUx{0:02} '.format(cpu)
 ############################################################################
-def get_avg(file_name, run = 1, runs = 1, cpu = 0, benchmark_verbose = False):
+def get_avg(file_name, run, runs, cpu, benchmark_verbose):
     version = str()
     execution_time = str()
     avg = list()
@@ -81,7 +80,7 @@ def get_avg(file_name, run = 1, runs = 1, cpu = 0, benchmark_verbose = False):
 
     return( [version, avg, columns, vals] )
 ############################################################################
-def do_one_benchmark( save, ticks = 1000, run = 1, runs = 1, cpu = 0, mod_directory = "", benchmark_verbose = False ):
+def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verbose ):
     ret_value = list()
 
     if mod_directory == "":
@@ -108,13 +107,24 @@ def do_one_benchmark( save, ticks = 1000, run = 1, runs = 1, cpu = 0, mod_direct
 
     return( ret_value )
 ############################################################################
-def log(text = "", filename = 'test_results.txt', encoding_txt='utf_16_le'):
+def log(text = "", filename = None, encoding_txt = None):
+    if filename is None:
+        filename = 'test_results.txt'
+    if encoding_txt is None:
+        encoding_txt='utf_16_le'
+
     with open( filename, 'a', encoding=encoding_txt ) as f:
         print( text, file=f, flush=True )
 ############################################################################
-def benchmark( saves = [""], ticks = 1000, runs = 3, benchmark_verbose = False, cpus = [0], mod_directory = "" ):
+def benchmark( saves, ticks, runs, benchmark_verbose = None, cpus = None, mod_directory = None ):
+    if benchmark_verbose is None:
+        benchmark_verbose = False
+    if cpus is None:
+        cpus = [0]
+    if mod_directory is None:
+        mod_directory = ""
+    
     now = datetime.datetime.now()
-
     log( "----------------------" )
     for save in saves:
         if save != "":
