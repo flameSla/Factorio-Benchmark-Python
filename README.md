@@ -1,7 +1,7 @@
 ## Factorio-Benchmark-Python
 
 ### Installing the script
-Insatall psutil https://psutil.readthedocs.io/en/latest/#install-1
+Install psutil https://psutil.readthedocs.io/en/latest/#install-1
 ```
 pip install psutil
 ```
