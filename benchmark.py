@@ -6,6 +6,7 @@ import datetime
 import shutil
 import statistics
 import subprocess
+import psutil
 
 ############################################################################
 def get_cpu_str( cpu ):
@@ -89,20 +90,41 @@ def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verb
             shutil.rmtree( mod_directory )
         except OSError as e:
             pass
-    argList = 'factorio.exe --mod-directory "{3}" --benchmark "{0}" --benchmark-ticks {1} --benchmark-runs {2} --disable-audio'.format(save, ticks, runs, mod_directory)
+
+    argList = list()
+    if platform.system() == 'Windows':
+        argList.append('factorio.exe')
+
+    argList.append('--mod-directory')
+    argList.append(mod_directory)
+    argList.append('--benchmark')
+    argList.append(save)
+    argList.append('--benchmark-ticks')
+    argList.append( str(ticks) )
+    argList.append('--benchmark-runs')
+    argList.append( str(runs) )
+    argList.append('--disable-audio')
     if benchmark_verbose:
-        argList = argList + ' --benchmark-verbose "all"'
-    affinity_mask = 2**cpu - 1 #Windows https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setprocessaffinitymask
-    # start_factorio.exe:
-    #   sets the process (factorio.exe) priority to HIGH
-    #   sets the affinity for the process
-    #   the output redirects to a file "temp"
-    process = subprocess.run(['start_factorio.exe', argList, str( affinity_mask )], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8', shell=True)
+        argList.append('--benchmark-verbose')
+        argList.append('all')
+    
+    process = psutil.Popen( args = argList, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+    if platform.system() == 'Windows':
+        process.nice( psutil.HIGH_PRIORITY_CLASS )
+
+        
+    if cpu != 0:
+        process.cpu_affinity(list(range(0,cpu)))
+
+    out, err = process.communicate()
     if process.returncode != 0:
-        # Error
-        print( process.stdout )
-        print( process.stderr )
+    # Error
+        print( out )
+        print( err )
     else:
+        with open( 'temp', 'wb' ) as f:
+            f.write(out)
+
         ret_value = get_avg( 'temp', run, runs, cpu, benchmark_verbose )
 
     return( ret_value )
@@ -162,4 +184,3 @@ def benchmark( saves, ticks, runs, benchmark_verbose = None, cpus = None, mod_di
                     log( ';'.join(str(x) for x in ret_val[2]) ) #columns
                     log( ';'.join("{0:.3f}".format(x/runs) for x in verbose_data) )
 ############################################################################
-
