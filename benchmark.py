@@ -95,7 +95,7 @@ def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verb
     if platform.system() == 'Windows':
         argList.append('factorio.exe')
     elif platform.system() == 'Linux':
-        argList.append('factorio')
+        argList.append('./factorio')
 
     argList.append('--mod-directory')
     argList.append(mod_directory)
