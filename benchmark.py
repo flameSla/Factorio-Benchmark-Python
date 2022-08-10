@@ -94,6 +94,8 @@ def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verb
     argList = list()
     if platform.system() == 'Windows':
         argList.append('factorio.exe')
+    elif platform.system() == 'Linux':
+        argList.append('factorio')
 
     argList.append('--mod-directory')
     argList.append(mod_directory)
@@ -111,8 +113,9 @@ def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verb
     process = psutil.Popen( args = argList, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
     if platform.system() == 'Windows':
         process.nice( psutil.HIGH_PRIORITY_CLASS )
+    elif platform.system() == 'Linux':
+        process.nice( -20 )
 
-        
     if cpu != 0:
         process.cpu_affinity(list(range(0,cpu)))
 
