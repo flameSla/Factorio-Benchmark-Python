@@ -1,12 +1,17 @@
 ## Factorio-Benchmark-Python
 
 ### Installing the script
+Insatall psutil https://psutil.readthedocs.io/en/latest/#install-1
+```
+pip install psutil
+```
+
 Place files:
 
 - benchmark.py
 - template_for_benchmark.py
 - template_for_benchmark.zip
-- start_factorio.exe
+
 
 next to factorio.exe
 
