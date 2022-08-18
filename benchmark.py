@@ -122,8 +122,8 @@ def do_one_benchmark( save, ticks, run, runs, cpu, mod_directory, benchmark_verb
     out, err = process.communicate()
     if process.returncode != 0:
     # Error
-        print( out )
-        print( err )
+        print( out.decode() )
+        print( err.decode() )
     else:
         with open( 'temp', 'wb' ) as f:
             f.write(out)
