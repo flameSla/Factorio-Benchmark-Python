@@ -77,7 +77,6 @@ def get_avg(file_name, run, runs, cpu, benchmark_verbose):
                         ret_val['verbose_averaged_values'] = list(map(lambda a, b: a + b, ret_val['verbose_averaged_values'], vals))
                 else:
                     tick += 1
-                    print(tick)
                     # averaging
                     ret_val['verbose_averaged_values'] = [i/tick for i in ret_val['verbose_averaged_values']]
                     break
@@ -190,6 +189,6 @@ def benchmark(saves, ticks, runs, benchmark_verbose=None, cpus=None, mod_directo
 
                 log('{} {:64} {:3}x{:8} ticks avg: {:10.3f} ms {:8.3f} FPS   {} {} {} pstdev={:.3f}{}'.format(now.strftime("%Y-%m-%d %H:%M"), save, runs, ticks, avg_ms, 1000.0/avg_ms, version, platform.system(), get_cpu_str(cpu), pstdev, avgs))
                 if benchmark_verbose and ret_val:
-                    line = ';'.join("{0} = {1:.3f}".format(a, b/runs) for a, b in zip(ret_val['column_names'], ret_val['verbose_averaged_values']))
+                    line = ';'.join("{0} = {1:.3f}".format(a, b/runs) for a, b in zip(ret_val['column_names'], verbose_data))
                     log(line)
 ############################################################################
